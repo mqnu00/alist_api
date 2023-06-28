@@ -78,4 +78,5 @@ def idm_download(idm_path, idm_exe, download_url, file_path, file_name):
     # 将下载链接全部加入到下载列表，之后再进行下载。
     for ul in urlList:
         call([idm_path + '/' + idm_exe, '/d', ul, '/p', file_path, '/f', file_name, '/n', '/a'])
+    print("添加到下载列表完成")
     call([idm_path + '/' + idm_exe, '/s'])

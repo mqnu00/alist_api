@@ -6,7 +6,8 @@ from download_methods import requests_tqdm_download, idm_download
 
 user_agent = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:95.0) Gecko/20100101 Firefox/95.0'
 headers = {'User-Agent': user_agent}
-idm_path = 'IDM地址'
+# idm软件的路径
+idm_path = 'D:/tools/IDM'
 idm_exe = 'IDMan.exe'
 
 
@@ -37,7 +38,7 @@ def create_folder(path):
 
 
 # 下载
-def download(host, base_path, path, cnt):
+def download(host, host_d, base_path, path, cnt):
     # 获取文件夹内文件列表
     get_list(host, path, cnt)
     create_folder(base_path + '/' + path.split('/')[-1])
@@ -59,21 +60,25 @@ def download(host, base_path, path, cnt):
         if name_type == 1:
             print("这是一个文件夹")
             get_list(host, path + '/' + name, cnt + 1)
-            download(host, base_path + '/' + path.split('/')[-1], path + '/' + name, cnt + 1)
+            download(host, host_d, base_path + '/' + path.split('/')[-1], path + '/' + name, cnt + 1)
             continue
         # 获取文件的下载url
-        download_url = get_download_url(host, path + '/' + name)
+        # download_url = get_download_url(host, path + '/' + name)
+        download_url = host_d + path + '/' + name + f'?sign={info["sign"]}'
         # 下载方法
         # requests_tqdm_download(download_url, file_path, name)
         idm_download(idm_path, idm_exe, download_url, file_path, name)
 
 
 if __name__ == "__main__":
+    # 下载的网址
     url = "网址"
     parseresult = parse.urlparse(url)
     scheme = parseresult.scheme
     netloc = parseresult.netloc
     path = parse.unquote(parseresult.path)
     host = f"{scheme}://{netloc}"
-    base_path = "下载文件的保存路径"
-    download(host, base_path, path, 0)
+    host_d = f"{scheme}://{netloc}/d"
+    # 下载的文件保存的地址
+    base_path = "f:/"
+    download(host, host_d, base_path, path, 0)
