@@ -91,7 +91,7 @@ def download(host, base_path, path, cnt):
             desc=filepath
         )
         # 数据下载到文件
-        with open(filepath, 'wb') as file:
+        with open(filepath, 'ab') as file:
             for data in response.iter_content(block_size):
                 if data:
                     progress_bar.update(len(data))
