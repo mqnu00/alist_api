@@ -2,10 +2,12 @@ import json
 import os
 from urllib import parse
 import requests
-from tqdm import tqdm
+from download_methods import requests_tqdm_download, idm_download
 
 user_agent = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:95.0) Gecko/20100101 Firefox/95.0'
 headers = {'User-Agent': user_agent}
+idm_path = 'IDM地址'
+idm_exe = 'IDMan.exe'
 
 
 # 获取链接下文件的名字
@@ -51,7 +53,7 @@ def download(host, base_path, path, cnt):
         print(name)
         print(str(count) + '/' + str(len(name_list["data"]["content"])))
         # 下载的文件存放的路径
-        filepath = base_path + '/' + path.split('/')[-1] + '/' + name
+        file_path = base_path + '/' + path.split('/')[-1]
         count = count + 1
         # 文件夹判断
         if name_type == 1:
@@ -61,43 +63,9 @@ def download(host, base_path, path, cnt):
             continue
         # 获取文件的下载url
         download_url = get_download_url(host, path + '/' + name)
-        try:
-            response = requests.get(download_url, stream=True)
-        except Exception:
-            print("不知道出了什么问题")
-            continue
-        # 获取文件大小
-        total_size_in_bytes = int(response.headers.get('content-length', 0))
-        # 每次下载的字长
-        block_size = 1024
-
-        # 获取以前下载的大小，断点续传
-        if os.path.exists(filepath):
-            first_byte = os.path.getsize(filepath)
-        else:
-            first_byte = 0
-        if first_byte >= total_size_in_bytes:
-            print("已下载完成")
-            continue
-        header = headers
-        header['Range'] = f"bytes={first_byte}-{total_size_in_bytes}"
-        response = requests.get(download_url, stream=True, headers=header)
-        # 显示下载进度条
-        progress_bar = tqdm(
-            total=total_size_in_bytes,
-            initial=first_byte,
-            unit='iB',
-            unit_scale=True,
-            desc=filepath
-        )
-        # 数据下载到文件
-        with open(filepath, 'wb') as file:
-            for data in response.iter_content(block_size):
-                if data:
-                    progress_bar.update(len(data))
-                    file.write(data)
-
-        progress_bar.close()
+        # 下载方法
+        # requests_tqdm_download(download_url, file_path, name)
+        idm_download(idm_path, idm_exe, download_url, file_path, name)
 
 
 if __name__ == "__main__":
@@ -107,5 +75,5 @@ if __name__ == "__main__":
     netloc = parseresult.netloc
     path = parse.unquote(parseresult.path)
     host = f"{scheme}://{netloc}"
-    base_path = "下载的文件存放的地址"
+    base_path = "下载文件的保存路径"
     download(host, base_path, path, 0)
