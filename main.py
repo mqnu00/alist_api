@@ -64,7 +64,9 @@ def download(host, host_d, base_path, path, cnt):
             continue
         # 获取文件的下载url
         # download_url = get_download_url(host, path + '/' + name)
-        download_url = host_d + path + '/' + name + f'?sign={info["sign"]}'
+        download_url = host_d + parse.quote(path + '/' + name + f'?sign={info["sign"]}')
+        # with open("res.txt", 'a', encoding='utf-8') as f:
+        #     f.write(download_url + '\n')
         # 下载方法
         # requests_tqdm_download(download_url, file_path, name)
         idm_download(idm_path, idm_exe, download_url, file_path, name)
@@ -72,7 +74,7 @@ def download(host, host_d, base_path, path, cnt):
 
 if __name__ == "__main__":
     # 下载的网址
-    url = "网址"
+    url = ""
     parseresult = parse.urlparse(url)
     scheme = parseresult.scheme
     netloc = parseresult.netloc
@@ -80,5 +82,5 @@ if __name__ == "__main__":
     host = f"{scheme}://{netloc}"
     host_d = f"{scheme}://{netloc}/d"
     # 下载的文件保存的地址
-    base_path = "f:/"
+    base_path = ""
     download(host, host_d, base_path, path, 0)
